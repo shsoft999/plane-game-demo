@@ -5,10 +5,29 @@ import Plane from "../components/Plane";
 export default defineComponent({
     setup() {
         const planeInfo = reactive({ x: 300, y: 300 });
-
+        const speed = 10;
         window.addEventListener("keydown", (e) => {
-            if (e.code == "ArrowUp") {
-                console.log("up");
+            switch (e.code) {
+                case "ArrowUp":
+                    if (planeInfo.y > 0) {
+                        planeInfo.y -= speed;
+                    }
+                    break;
+                case "ArrowDown":
+                    if (planeInfo.y < 400) {
+                        planeInfo.y += speed;
+                    }
+                    break;
+                case "ArrowLeft":
+                    if (planeInfo.x > 0) {
+                        planeInfo.x -= speed;
+                    }
+                    break;
+                case "ArrowRight":
+                    if (planeInfo.x < 320) {
+                        planeInfo.x += speed;
+                    }
+                    break;
             }
         });
 

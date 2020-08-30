@@ -1,7 +1,7 @@
 import App from "./src/App";
 
 //下面两个重构包装结果
-import { createApp } from './runtime-canvas';
+import { createApp } from './src/runtime-canvas';
 import { getRootContainer } from './src/game';
 
 // 根组件

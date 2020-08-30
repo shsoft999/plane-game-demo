@@ -23,9 +23,8 @@ export default defineComponent({
         //     }
         // }, 0);
 
-        // ticker 是 pixijs 中的真循环，利用网页刷新频率
+        // ticker 是 pixijs 中的永真循环，利用网页刷新频率
         game.ticker.add(() => {
-            console.log("map");
             mapY1.value += speed;
             mapY2.value += speed;
 
