@@ -1,7 +1,7 @@
 import { Application } from "pixi.js";
 
 // 初始化一个 canvas
-const game = new Application({
+export const game = new Application({
     width: 600,
     height: 800,
     antialias: true,

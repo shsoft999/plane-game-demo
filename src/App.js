@@ -1,6 +1,6 @@
 import { defineComponent, h, ref, computed } from "@vue/runtime-core";
-import StartPage from '../src/components/StartPage';
-import GamePage from '../src/components/GamePage';
+import StartPage from '../src/pages/StartPage';
+import GamePage from '../src/pages/GamePage';
 
 export default defineComponent({
     setup() {

@@ -21,7 +21,7 @@ const renderer = createRenderer({
             el.texture = Texture.from(nextValue);
         } else if (key == "onClick") {
             el.on("pointertap", nextValue);
-        }
+        } 
         else {
             el[key] = nextValue;
         }
