@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@vue/runtime-core": "^3.0.0-rc.9",
+    "@tweenjs/tween.js": "^18.5.0",
     "file-loader": "^6.0.0",
     "pixi.js": "^5.3.3"
   }
