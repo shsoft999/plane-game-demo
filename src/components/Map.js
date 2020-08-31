@@ -43,8 +43,8 @@ export default defineComponent({
     },
     render(ctx) {
         return h("Container", [
-            h("Sprite", { imgPath: mapImg, y: ctx.mapY1 }),
-            h("Sprite", { imgPath: mapImg, y: ctx.mapY2 })
+            h("Sprite", { imgPath: mapImg, y: ctx.mapY1, width: 600 }),
+            h("Sprite", { imgPath: mapImg, y: ctx.mapY2, width: 600 })
         ]);
     },
 });
