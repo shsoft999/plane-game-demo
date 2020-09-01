@@ -1,5 +1,6 @@
 import { createRenderer } from "@vue/runtime-core";
-import { Texture, Container, Sprite } from 'pixi.js'
+import { Texture, Container, Sprite, AnimatedSprite } from 'pixi.js'
+import blowImg1 from "../../assets/blow1.png";
 
 // 渲染器
 const renderer = createRenderer({
@@ -9,6 +10,9 @@ const renderer = createRenderer({
             element = new Container();
         } else if (type == "Sprite") {
             element = new Sprite();
+        } else if (type == "AnimatedSprite") {
+            const textureArray = [Texture.from(blowImg1)];
+            element = new AnimatedSprite(textureArray);
         }
 
         return element;
@@ -21,7 +25,15 @@ const renderer = createRenderer({
             el.texture = Texture.from(nextValue);
         } else if (key == "onClick") {
             el.on("pointertap", nextValue);
-        } 
+        } else if (key == "imgPathArray") {
+            const createTextures = () => {
+                return nextValue.map((info) => {
+                    return Texture.from(info);
+                });
+            };
+            el.textures = createTextures();
+            el.play();
+        }
         else {
             el[key] = nextValue;
         }
@@ -29,9 +41,9 @@ const renderer = createRenderer({
     // 处理注释
     createComment() { },
     // 获取父节点
-    parentNode() { },
+    parentNode: (node) => node.parentNode,
     // 获取兄弟节点
-    nextSibling() { },
+    nextSibling: (node) => node.nextSibling,
     // 删除节点时调用
     remove(el) {
         const parent = el.parent;

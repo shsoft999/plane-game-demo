@@ -4,7 +4,7 @@ import { game } from '../game'
 
 export default defineComponent({
     setup() {
-        const viewHeight = 1075;
+        const viewHeight = 2042;
         const mapY1 = ref(0);
         const mapY2 = ref(viewHeight);
 
@@ -43,8 +43,8 @@ export default defineComponent({
     },
     render(ctx) {
         return h("Container", [
-            h("Sprite", { imgPath: mapImg, y: ctx.mapY1, width: 600 }),
-            h("Sprite", { imgPath: mapImg, y: ctx.mapY2, width: 600 })
+            h("Sprite", { imgPath: mapImg, y: ctx.mapY1 }),
+            h("Sprite", { imgPath: mapImg, y: ctx.mapY2 })
         ]);
     },
 });

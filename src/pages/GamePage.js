@@ -1,16 +1,18 @@
-import { defineComponent, h, reactive, onMounted, onUnmounted } from '@vue/runtime-core';
+import { defineComponent, h, reactive, toRefs, onMounted, onUnmounted } from '@vue/runtime-core';
 import { game } from '../game.js';
 import Map from "../components/Map";
 import Plane from "../components/Plane";
 import EnemyPlane from '../components/EnemyPlane'
 import Bullet from '../components/Bullet';
+import Blast from '../components/Blast'
 import { useKeyboardMove } from '../useKeyboardMove.js';
 import TWEEN from '@tweenjs/tween.js';
+import { hitTestObject } from '../../src/utils/hitTestRectangle.js'
 
 export default defineComponent({
     setup() {
         // 我方飞机
-        const planeInfo = reactive({ x: 600 / 2 - 60, y: 800 });
+        const planeInfo = reactive({ x: 600 / 2 - 60, y: 800, width: 180, height: 150 });
         const speed = 7;
 
         // 平滑控制我方飞机移动
@@ -33,31 +35,49 @@ export default defineComponent({
         });
 
         // 敌人飞机
-        const enemyPlaneInfo = reactive([{ x: 100, y: 100 }]);
+        const enemyPlaneInfo = reactive([{ x: 100, y: 100, width: 120, height: 90 }, { x: 300, y: 50, width: 120, height: 90 }]);
+
+        // 爆炸数据
+        const blasts = reactive([]);
+
+        // 我方子弹
+        const bullets = reactive([]);
+        const handPressSpace = ((info) => {
+            bullets.push({ ...info, width: 35, height: 64 });
+            return
+        });
 
         const handTicker = () => {
             // 移动我方子弹
             bullets.forEach((info) => {
-                info.y--;
+                info.y -= 10;
             });
 
             // 移动敌人飞机
-            enemyPlaneInfo.forEach((info) => {
-                info.y++;
+            // enemyPlaneInfo.forEach((info) => {
+            //     info.y++;
+            // });
+
+            // 敌方飞机和我方子弹的碰撞检测
+            bullets.forEach((bullet, bulletIndex) => {
+                enemyPlaneInfo.forEach((enemy, enemyIndex) => {
+                    const isIntersect = hitTestObject(bullet, enemy);
+                    if (isIntersect) {
+                        console.log(bulletIndex);
+                        console.log(enemyIndex);
+                        //blasts.push({ x: enemy.x, y: enemy.y });
+                        enemyPlaneInfo.splice(enemyIndex, 1);
+                        bullets.splice(bulletIndex, 1);
+                    }
+                });
             });
 
             TWEEN.update();
         };
 
-        // 我方子弹
-        const bullets = reactive([]);
-        const handPressSpace = ((info) => {
-            bullets.push({ ...info, width: 61, height: 99 });
-            return
-        });
-
         onMounted(() => {
             game.ticker.add(handTicker);
+            console.log(game);
         });
 
         onUnmounted(() => {
@@ -73,6 +93,7 @@ export default defineComponent({
             bullets,
             handPressSpace,
             enemyPlaneInfo,
+            blasts,
         };
     },
     render(ctx) {
@@ -88,11 +109,18 @@ export default defineComponent({
             });
         };
 
+        const createBlast = () => {
+            return ctx.blasts.map((info) => {
+                return h(Blast, { blastData: info });
+            });
+        }
+
         return h("Container", [
             h(Map),
-            h(Plane, { planeData: ctx.planeInfo, onPressSpace: ctx.handPressSpace }),
             ...createBullets(),
             ...createEnemyPlane(),
+            ...createBlast(),
+            h(Plane, { planeData: ctx.planeInfo, onPressSpace: ctx.handPressSpace }),
         ]);
     },
 });

@@ -1,5 +1,5 @@
 import { defineComponent, h, ref, toRefs } from '@vue/runtime-core';
-import planeImg from "../../assets/plane.png";
+import planeImg from "../../assets/my_1.png";
 
 export default defineComponent({
     props: ["planeData"],
@@ -7,7 +7,7 @@ export default defineComponent({
         window.addEventListener("keydown", (e) => {
             if (e.code == "Space") {
                 //通知父组件按了空格
-                emit("pressSpace", { x: props.planeData.x + 100, y: props.planeData.y })
+                emit("pressSpace", { x: props.planeData.x + 55, y: props.planeData.y })
             }
         });
 
