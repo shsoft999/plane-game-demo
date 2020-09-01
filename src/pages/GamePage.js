@@ -63,9 +63,8 @@ export default defineComponent({
                 enemyPlaneInfo.forEach((enemy, enemyIndex) => {
                     const isIntersect = hitTestObject(bullet, enemy);
                     if (isIntersect) {
-                        console.log(bulletIndex);
-                        console.log(enemyIndex);
-                        //blasts.push({ x: enemy.x, y: enemy.y });
+                        blasts.push({ x: enemy.x, y: enemy.y });
+                        console.log(blasts);
                         enemyPlaneInfo.splice(enemyIndex, 1);
                         bullets.splice(bulletIndex, 1);
                     }
