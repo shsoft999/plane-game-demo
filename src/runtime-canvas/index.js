@@ -46,7 +46,6 @@ const renderer = createRenderer({
     nextSibling: (node) => node.nextSibling,
     // 删除节点时调用
     remove(el) {
-        console.log(el);
         const parent = el.parent;
         if (parent) {
             parent.removeChild(el);
