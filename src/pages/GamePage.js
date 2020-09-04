@@ -8,79 +8,51 @@ import Blast from '../components/Blast'
 import { useKeyboardMove } from '../useKeyboardMove.js';
 import TWEEN from '@tweenjs/tween.js';
 import { hitTestObject } from '../../src/utils/hitTestRectangle.js'
+import { moveBullets } from '../moveBullets.js'
+import { moveEnemyPlane } from '../moveEnemyPlane.js'
 
 export default defineComponent({
     setup() {
         // 敌人飞机
         const enemyPlanes = enemyPlane();
 
+        // 敌人子弹
+        const { enemyBullets, createEnemyBullet } = useEnemyBullets();
+
         // 我方飞机
         const selfPlane = usePlane();
 
         // 我方子弹
-        const { destroySelfBullet } = useBullets();
-
-        // 子弹数据
-        const selfBullets = reactive([]);
-
-        // 创建子弹
-        const createSelfBullet = ({ x, y }) => {
-            console.log("createBullets");
-            console.log(x);
-            console.log(y);
-            console.log(selfBullets);
-            const id = createHashCode();
-            const width = SelfBulletInfo.width;
-            const height = SelfBulletInfo.height;
-            const rotation = SelfBulletInfo.rotation;
-            const dir = SelfBulletInfo.dir;
-            selfBullets.push({ x, y, id, width, height, rotation, dir });
-        };
-
-        // const handTicker = () => {
-        //     // 移动我方子弹
-        //     bullets.forEach((info) => {
-        //         info.y -= 10;
-        //     });
-
-        //     // 移动敌人飞机
-        //     // enemyPlanes.forEach((info) => {
-        //     //     info.y++;
-        //     // });
-
-        //     // 敌方飞机和我方子弹的碰撞检测
-        //     bullets.forEach((bullet, bulletIndex) => {
-        //         enemyPlanes.forEach((enemy, enemyIndex) => {
-        //             const isIntersect = hitTestObject(bullet, enemy);
-        //             if (isIntersect) {
-        //                 // blasts.push({ x: enemy.x, y: enemy.y });
-        //                 // console.log(blasts);
-        //                 enemyPlanes.splice(enemyIndex, 1);
-        //                 bullets.splice(bulletIndex, 1);
-        //             }
-        //         });
-        //     });
-        // };
+        const { selfBullets, createSelfBullet, destroySelfBullet } = useBullets();
 
         // 爆炸数据
         const blasts = reactive([]);
 
         // 战斗逻辑
-        useFighting({ selfPlane, selfBullets, enemyPlanes });
+        useFighting({ selfPlane, selfBullets, enemyBullets, enemyPlanes });
 
         return {
             selfPlane,
             selfBullets,
-            createSelfBullet,
-            destroySelfBullet,
             enemyPlanes,
+            enemyBullets,
+            createSelfBullet,
+            createEnemyBullet,
+            destroySelfBullet,
             blasts,
         };
     },
     render(ctx) {
-        const createEnemyPlane = () => {
-            return ctx.enemyPlanes.map((info) => {
-                return h(EnemyPlane, { planeData: info });
+        const createEnemyPlane = (info, index) => {
+            return h(EnemyPlane, {
+                key: "EnemyPlane" + index,
+                x: info.x,
+                y: info.y,
+                height: info.height,
+                width: info.width,
+                onAttack({ x, y }) {
+                    ctx.createEnemyBullet(x, y);
+                },
             });
         };
 
@@ -109,7 +81,8 @@ export default defineComponent({
         return h("Container", [
             h(Map),
             ...ctx.selfBullets.map(createBullet),
-            ...createEnemyPlane(),
+            ...ctx.enemyBullets.map(createBullet),
+            ...ctx.enemyPlanes.map(createEnemyPlane),
             ...createBlast(),
             h(Plane, { x: ctx.selfPlane.x, y: ctx.selfPlane.y, onPressSpace: ctx.createSelfBullet }),
         ]);
@@ -123,12 +96,14 @@ const enemyPlane = () => {
         return {
             x,
             y: 50,
-            width: 120,
-            height: 90,
+            width: 134,
+            height: 89,
         };
     };
 
+    // 乱人飞机数据
     const enemyPlanes = reactive([]);
+
     setInterval(() => {
         const x = Math.floor((1 + 700) * Math.random());
         enemyPlanes.push(createEnemyPlaneData(x));
@@ -136,6 +111,26 @@ const enemyPlane = () => {
 
     return enemyPlanes;
 }
+
+// 乱人子弹
+const useEnemyBullets = () => {
+    // 敌军子弹数据
+    const enemyBullets = reactive([]);
+
+    const createEnemyBullet = (x, y) => {
+        const id = createHashCode();
+        const width = EnemyBulletInfo.width;
+        const height = EnemyBulletInfo.height;
+        const rotation = EnemyBulletInfo.rotation;
+        const dir = EnemyBulletInfo.dir;
+        enemyBullets.push({ x, y, id, width, height, rotation, dir });
+    };
+
+    return {
+        enemyBullets,
+        createEnemyBullet,
+    };
+};
 
 // 我方子弹
 let hashCode = 0;
@@ -148,16 +143,12 @@ const useBullets = () => {
 
     // 创建子弹
     const createSelfBullet = ({ x, y }) => {
-        console.log("createBullets");
-        console.log(x);
-        console.log(y);
-        console.log(selfBullets);
         const id = createHashCode();
         const width = SelfBulletInfo.width;
         const height = SelfBulletInfo.height;
         const rotation = SelfBulletInfo.rotation;
         const dir = SelfBulletInfo.dir;
-        selfBullets.push({ x, y, id, width, height, rotation, dir });
+        selfBullets.push({ x: x, y: y, id, width, height, rotation, dir });
     };
 
     // 销毁子弹
@@ -177,7 +168,7 @@ const useBullets = () => {
 
 // 我方飞机
 const usePlane = () => {
-    const selfPlane = reactive({ x: 600 / 2 - 60, y: 800, width: 180, height: 150 });
+    const selfPlane = reactive({ x: 600 / 2 - 60, y: 800, width: 182, height: 120 });
     const speed = 7;
 
     // 平滑控制我方飞机移动
@@ -222,11 +213,16 @@ const usePlane = () => {
 const useFighting = ({
     selfPlane,
     selfBullets,
+    enemyBullets,
     enemyPlanes }) => {
 
     const handleTicker = () => {
         // 移动我方子弹
         moveBullets(selfBullets);
+        // 移动敌人子弹
+        moveBullets(enemyBullets);
+        // 移动敌人飞机
+        moveEnemyPlane(enemyPlanes);
 
         // 先遍历自己所有的子弹
         selfBullets.forEach((bullet, selfIndex) => {
@@ -235,7 +231,7 @@ const useFighting = ({
                 const isIntersect = hitTestObject(bullet, enemyPlane);
                 if (isIntersect) {
                     selfBullets.splice(selfIndex, 1);
-
+                    enemyPlanes.splice(enemyPlaneIndex, 1);
                     //   // 敌机需要减血
                     //   enemyPlane.life--;
                     //   if (enemyPlane.life <= 0) {
@@ -265,32 +261,4 @@ const useFighting = ({
     onMounted(() => {
         game.ticker.add(handleTicker);
     });
-};
-
-// 移动子弹
-const bulletSpeed = 7;
-const moveBullets = (bullets) => {
-    bullets.forEach((bullet, index) => {
-        const dir = bullet.dir;
-        bullet.y += bulletSpeed * dir;
-        if (isOverBorder(bullet.y)) {
-            bullets.splice(index, 1);
-            console.log("moveBullets");
-        }
-    });
-};
-
-// 画布高度 + 50，子弹超出屏幕销毁
-const bottomLine = 950 + 50;
-const topLine = -100;
-const isOverBorder = (val) => {
-    if (val > bottomLine) {
-        return true;
-    }
-
-    if (val < topLine) {
-        return true;
-    }
-
-    return false;
 };

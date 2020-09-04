@@ -1,4 +1,4 @@
-import { defineComponent, h, ref, toRefs } from '@vue/runtime-core';
+import { defineComponent, h, ref, toRefs, watch } from '@vue/runtime-core';
 import planeImg from "../../assets/my_1.png";
 
 export default defineComponent({
@@ -7,7 +7,6 @@ export default defineComponent({
         const x = ref(props.x);
         const y = ref(props.y);
 
-        console.log(props);
         watch(props, (newProps) => {
             x.value = newProps.x;
             y.value = newProps.y;
@@ -16,7 +15,7 @@ export default defineComponent({
         window.addEventListener("keydown", (e) => {
             if (e.code == "Space") {
                 //　通知父组件按了空格
-                emit("pressSpace", { x: x.value, y: y.value })
+                emit("pressSpace", { x: props.x + 73, y: props.y })
             }
         });
 
