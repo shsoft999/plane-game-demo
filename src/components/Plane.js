@@ -1,3 +1,4 @@
+// 我方飞机
 import { defineComponent, h, ref, toRefs, watch } from '@vue/runtime-core';
 import planeImg from "../../assets/my_1.png";
 

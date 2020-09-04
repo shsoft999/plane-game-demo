@@ -1,3 +1,4 @@
+// 爆炸动画
 import { defineComponent, h, toRefs } from '@vue/runtime-core';
 import blowImg1 from "../../assets/blow1.png";
 import blowImg2 from "../../assets/blow2.png";
