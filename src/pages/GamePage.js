@@ -13,10 +13,10 @@ import { moveEnemyPlane } from '../moveEnemyPlane.js'
 
 export default defineComponent({
     setup() {
-        // 敌人飞机
+        // 敌方飞机
         const enemyPlanes = enemyPlane();
 
-        // 敌人子弹
+        // 敌方子弹
         const { enemyBullets, createEnemyBullet } = useEnemyBullets();
 
         // 我方飞机
@@ -89,7 +89,7 @@ export default defineComponent({
     },
 });
 
-// 乱人飞机
+// 敌人飞机
 const enemyPlane = () => {
     // 生产敌机
     const createEnemyPlaneData = (x) => {
@@ -101,7 +101,7 @@ const enemyPlane = () => {
         };
     };
 
-    // 乱人飞机数据
+    // 敌人飞机数据
     const enemyPlanes = reactive([]);
 
     setInterval(() => {
@@ -112,7 +112,7 @@ const enemyPlane = () => {
     return enemyPlanes;
 }
 
-// 乱人子弹
+// 敌人子弹
 const useEnemyBullets = () => {
     // 敌军子弹数据
     const enemyBullets = reactive([]);
