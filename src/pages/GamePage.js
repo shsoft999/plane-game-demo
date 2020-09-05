@@ -1,4 +1,4 @@
-import { defineComponent, h, reactive, toRefs, onMounted, onUnmounted } from '@vue/runtime-core';
+import { defineComponent, h, reactive, onMounted, onUnmounted } from '@vue/runtime-core';
 import { game } from '../game.js';
 import Map from "../components/Map";
 import Plane from "../components/Plane";
@@ -29,7 +29,7 @@ export default defineComponent({
         const blasts = reactive([]);
 
         // 战斗逻辑
-        useFighting({ selfPlane, selfBullets, enemyBullets, enemyPlanes });
+        useFighting({ selfPlane, selfBullets, enemyBullets, enemyPlanes, blasts });
 
         return {
             selfPlane,
@@ -56,11 +56,9 @@ export default defineComponent({
             });
         };
 
-        const createBlast = () => {
-            return ctx.blasts.map((info) => {
-                return h(Blast, { blastData: info });
-            });
-        }
+        const createBlast = (info) => {
+            return h(Blast, { x: info.x, y: info.y });
+        };
 
         const createBullet = (info) => {
             return h(Bullet, {
@@ -83,7 +81,7 @@ export default defineComponent({
             ...ctx.selfBullets.map(createBullet),
             ...ctx.enemyBullets.map(createBullet),
             ...ctx.enemyPlanes.map(createEnemyPlane),
-            ...createBlast(),
+            ...ctx.blasts.map(createBlast),
             h(Plane, { x: ctx.selfPlane.x, y: ctx.selfPlane.y, onPressSpace: ctx.createSelfBullet }),
         ]);
     },
@@ -214,7 +212,8 @@ const useFighting = ({
     selfPlane,
     selfBullets,
     enemyBullets,
-    enemyPlanes }) => {
+    enemyPlanes,
+    blasts }) => {
 
     const handleTicker = () => {
         // 移动我方子弹
@@ -230,27 +229,29 @@ const useFighting = ({
             enemyPlanes.forEach((enemyPlane, enemyPlaneIndex) => {
                 const isIntersect = hitTestObject(bullet, enemyPlane);
                 if (isIntersect) {
+                    blasts.push({ x: enemyPlane.x, y: enemyPlane.y, id: createHashCode() });
+
                     selfBullets.splice(selfIndex, 1);
                     enemyPlanes.splice(enemyPlaneIndex, 1);
-                    //   // 敌机需要减血
-                    //   enemyPlane.life--;
-                    //   if (enemyPlane.life <= 0) {
+                    // // 敌机需要减血
+                    // enemyPlane.life--;
+                    // if (enemyPlane.life <= 0) {
                     //     // todo
                     //     // 可以让实例发消息过来在销毁
                     //     // 因为需要在销毁之前播放销毁动画
                     //     enemyPlanes.splice(enemyPlaneIndex, 1);
-                    //   }
+                    // }
                 }
             });
 
             // 检测是否碰到了敌方子弹
-            // enemyPlaneBullets.forEach((enemyBullet, enemyBulletIndex) => {
-            //     const isIntersect = hitTestRectangle(bullet, enemyBullet);
-            //     if (isIntersect) {
-            //         selfBullets.splice(selfIndex, 1);
-            //         enemyPlaneBullets.splice(enemyBulletIndex, 1);
-            //     }
-            // });
+            enemyBullets.forEach((enemyBullet, enemyBulletIndex) => {
+                const isIntersect = hitTestObject(bullet, enemyBullet);
+                if (isIntersect) {
+                    selfBullets.splice(selfIndex, 1);
+                    enemyBullets.splice(enemyBulletIndex, 1);
+                }
+            });
         });
     };
 

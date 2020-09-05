@@ -1,5 +1,6 @@
 // 爆炸动画
-import { defineComponent, h, toRefs } from '@vue/runtime-core';
+import { defineComponent, h, ref, watch } from '@vue/runtime-core';
+import { AnimatedSprite } from 'pixi.js'
 import blowImg1 from "../../assets/blow1.png";
 import blowImg2 from "../../assets/blow2.png";
 import blowImg3 from "../../assets/blow3.png";
@@ -11,9 +12,16 @@ import blowImg8 from "../../assets/blow8.png";
 import blowImg9 from "../../assets/blow9.png";
 
 export default defineComponent({
-    props: ["blastData"],
+    props: ["x", "y"],
     setup(props) {
-        const { x, y } = toRefs(props.blastData);
+        const x = ref(props.x);
+        const y = ref(props.y);
+
+        watch(props, (newValue) => {
+            x.value = newValue.x;
+            y.value = newValue.y;
+        });
+        
         return {
             x,
             y,

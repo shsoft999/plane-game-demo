@@ -1,5 +1,5 @@
 // 敌军飞机
-import { defineComponent, h, ref, toRefs, watch, onMounted, onUnmounted } from '@vue/runtime-core';
+import { defineComponent, h, ref, watch, onMounted, onUnmounted } from '@vue/runtime-core';
 import enemyPlaneImg from "../../assets/ep_1.png";
 
 export default defineComponent({

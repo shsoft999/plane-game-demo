@@ -13,8 +13,14 @@ const renderer = createRenderer({
         } else if (type == "AnimatedSprite") {
             const textureArray = [Texture.from(blowImg1)];
             element = new AnimatedSprite(textureArray);
+            element.loop = false;
+            element.onComplete = function () {
+                const parent = element.parent;
+                if (parent) {
+                    parent.removeChild(element);
+                }
+            };
         }
-
         return element;
     },
     insert(el, parent) {
@@ -32,7 +38,7 @@ const renderer = createRenderer({
                 });
             };
             el.textures = createTextures();
-            el.play();
+            // el.play();
         }
         else {
             el[key] = nextValue;
