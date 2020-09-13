@@ -57,7 +57,7 @@ export default defineComponent({
         };
 
         const createBlast = (info) => {
-            return h(Blast, { x: info.x, y: info.y });
+            return h(Blast, { x: info.x, y: info.y, id: info.id, blasts: ctx.blasts });
         };
 
         const createBullet = (info) => {
@@ -229,7 +229,8 @@ const useFighting = ({
             enemyPlanes.forEach((enemyPlane, enemyPlaneIndex) => {
                 const isIntersect = hitTestObject(bullet, enemyPlane);
                 if (isIntersect) {
-                    blasts.push({ x: enemyPlane.x, y: enemyPlane.y, id: createHashCode() });
+                    const id = createHashCode();
+                    blasts.push({ x: enemyPlane.x, y: enemyPlane.y, id });
 
                     selfBullets.splice(selfIndex, 1);
                     enemyPlanes.splice(enemyPlaneIndex, 1);

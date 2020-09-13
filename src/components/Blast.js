@@ -12,10 +12,14 @@ import blowImg8 from "../../assets/blow8.png";
 import blowImg9 from "../../assets/blow9.png";
 
 export default defineComponent({
-    props: ["x", "y"],
+    props: ["x", "y", "id", "blasts"],
     setup(props) {
         const x = ref(props.x);
         const y = ref(props.y);
+        const id = props.id;
+        const blasts = props.blasts;
+        console.log(id);
+        console.log(blasts);
 
         watch(props, (newValue) => {
             x.value = newValue.x;
